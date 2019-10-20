@@ -7,7 +7,9 @@ import ButtonRow from '../components/ButtonRow';
 
 class Home extends Component {
   state = {
-    current: '0'
+    current: '0',
+    previous: null,
+    operator: null
   };
 
   handlePress(value) {
@@ -21,33 +23,67 @@ class Home extends Component {
 
   handleNumber(num) {
     this.setState(state => {
-      if (state.current === '0') {
+      const { current } = this.state;
+      if (current === '0') {
         return { current: `${num}` }
+      } 
+      else if (current.replace('.', '').length > 8) {
+        return { current: `${current}` }
       }
       else {
-        return { current: `${state.current}${num}` }
+        return { current: `${current}${num}` }
       }
     });
   };
 
   handleOperator(str) {
+    const { current, previous, operator } = this.state;
+    const curr = parseFloat(current);
+    const prev = parseFloat(previous);
+
     switch (str) {
       case 'c':
-        this.setState({ current: '0' });
-      case '+/-':
+        this.setState(
+          defaultState
+        );
+        break;
+      case '+/-': 
+        this.setState({
+          current: `${curr * -1}`
+        });
+        break;
       case '%':
+        this.setState({
+          current: `${curr / 100}`
+        });
+        break;
       case '/':
       case '*':
       case '-':
       case '+':
+        this.setState({
+          operator: str,
+          previous: current,
+          current: '0'
+        });
+        break;
       case '.':
+        this.setState({
+          current: current.includes('.') ? `${current}` : `${current}.`
+        });
+        break;
       case '=':
+        this.setState({
+          operator: null,
+          previous: 0,
+          current: current && operator ? eval(prev + operator + curr).toString() : `${current}`
+        });
         break;
     }
   };
 
   formatNumber(num) {
-    return parseInt(num).toLocaleString()
+    return parseFloat(num).toLocaleString('en-US', { maximumFractionDigits: 8 });
   };
 
   render() {
@@ -95,6 +131,12 @@ class Home extends Component {
     );
   };
 };
+
+const defaultState = {
+  current: '0',
+  previous: null,
+  operator: null
+}
 
 const styles = StyleSheet.create({
   container: {

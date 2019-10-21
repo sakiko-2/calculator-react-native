@@ -9,7 +9,8 @@ class Home extends Component {
   state = {
     current: '0',
     previous: null,
-    operator: null
+    operator: null,
+    showDisplay: true
   };
 
   handlePress(value) {
@@ -23,15 +24,24 @@ class Home extends Component {
 
   handleNumber(num) {
     this.setState(state => {
-      const { current } = this.state;
+      const { current } = state;
       if (current === '0') {
-        return { current: `${num}` }
+        return {
+          current: `${num}`,
+          showDisplay: true
+        }
       } 
       else if (current.replace('.', '').length > 8) {
-        return { current: `${current}` }
+        return {
+          current: `${current}`,
+          showDisplay: true
+        }
       }
       else {
-        return { current: `${current}${num}` }
+        return {
+          current: `${current}${num}`,
+          showDisplay: true
+        }
       }
     });
   };
@@ -49,12 +59,14 @@ class Home extends Component {
         break;
       case '+/-': 
         this.setState({
-          current: `${curr * -1}`
+          current: `${curr * -1}`,
+          showDisplay: true
         });
         break;
       case '%':
         this.setState({
-          current: `${curr / 100}`
+          current: `${curr / 100}`,
+          showDisplay: true
         });
         break;
       case '/':
@@ -62,6 +74,7 @@ class Home extends Component {
       case '-':
       case '+':
         this.setState({
+          showDisplay: false,
           operator: str,
           previous: current,
           current: '0'
@@ -69,14 +82,16 @@ class Home extends Component {
         break;
       case '.':
         this.setState({
-          current: current.includes('.') ? `${current}` : `${current}.`
+          current: current.includes('.') ? `${current}` : `${current}.`,
+          showDisplay: true
         });
         break;
       case '=':
         this.setState({
           operator: null,
           previous: 0,
-          current: current && operator ? eval(prev + operator + curr).toString() : `${current}`
+          current: current && operator ? eval(prev + operator + curr).toString() : `${current}`,
+          showDisplay: true
         });
         break;
     }
@@ -92,11 +107,13 @@ class Home extends Component {
     const accentColor = '#ffa500';
     const lightText = '#fff';
     const darkText = '#000';
+    const { current, previous, showDisplay } = this.state;
+    const display = showDisplay ? current : previous;
 
     return (
       <SafeAreaView>
         <View style={styles.container}>
-          <Display text={this.formatNumber(this.state.current)}/>
+          <Display text={this.formatNumber(display)}/>
           <ButtonRow>
             <Button text={'C'} color={darkText} backgroundColor={lightColor} onPress={() => this.handlePress('c')} />
             <Button text={'+/-'} color={darkText} backgroundColor={lightColor} onPress={() => this.handlePress('+/-')} />
@@ -135,7 +152,8 @@ class Home extends Component {
 const defaultState = {
   current: '0',
   previous: null,
-  operator: null
+  operator: null,
+  showDisplay: true
 }
 
 const styles = StyleSheet.create({

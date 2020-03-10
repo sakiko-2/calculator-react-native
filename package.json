@@ -1,4 +1,7 @@
 {
+  "name": "calculator",
+  "version": "0.1.0",
+  "author": "Sakiko",
   "scripts": {
     "postinstall": "jetify",
     "android": "react-native run-android",
